@@ -1,6 +1,6 @@
 'use client';
 
-import { PrivySolanaProvider } from '@privy-io/react-auth-solana';
+import { PrivySolanaProvider } from '@privy-io/react-auth/solana';
 import { Cluster } from '@solana/web3.js';
 import { ReactNode } from 'react';
 

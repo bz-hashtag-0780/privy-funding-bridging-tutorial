@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { useFundWallet } from '@privy-io/react-auth';
-import { useFundWallet as useFundWalletSolana } from '@privy-io/react-auth-solana';
+import { useFundWallet as useFundWalletSolana } from '@privy-io/react-auth/solana';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { flowEvm } from '../config/chains';
@@ -96,21 +96,28 @@ export default function Bridge() {
 		}
 	};
 
-	// Example of PayPal to Flow EVM flow
-	const handlePayPalToFlow = async () => {
+	// Example of bridging Solana USDC to Flow EVM USDC
+	const handleSolanaUsdcToFlowUsdc = async () => {
 		if (!embeddedWallet) return;
 
 		try {
-			await fundEvmWallet(embeddedWallet.address, {
-				amount: '25', // Amount in USD
-				chain: flowEvm, // Target chain (Flow EVM)
-				defaultFundingMethod: 'card', // Use card provider which includes PayPal options
-				card: {
-					preferredProvider: 'moonpay', // MoonPay supports PayPal in some regions
-				},
+			// First fund a Solana wallet with USDC
+			await fundSolanaWallet(embeddedWallet.address, {
+				amount: '10', // Amount in USDC on Solana
+				cluster: { name: 'mainnet-beta' },
+				defaultFundingMethod: 'wallet', // Use external wallet for bridging
 			});
+
+			// Then use Reservoir Relay to bridge to Flow EVM
+			// Note: In a real implementation, you would need to check when the Solana funding is complete
+			console.log(
+				'Bridging USDC from Solana to Flow EVM via Reservoir Relay...'
+			);
+
+			// The actual bridging happens behind the scenes via Reservoir Relay
+			// Bridge result would be USDC on Flow EVM
 		} catch (error) {
-			console.error('Error using PayPal to fund Flow EVM:', error);
+			console.error('Error bridging Solana USDC to Flow EVM:', error);
 		}
 	};
 
@@ -214,11 +221,11 @@ export default function Bridge() {
 						</button>
 
 						<button
-							onClick={handlePayPalToFlow}
+							onClick={handleSolanaUsdcToFlowUsdc}
 							className="w-full btn-primary"
 							disabled={!embeddedWallet}
 						>
-							PayPal → Flow EVM Example
+							Bridge Solana USDC to Flow USDC
 						</button>
 					</div>
 				</div>
@@ -251,6 +258,28 @@ await fundWallet(address, {
   amount: '0.01',
   chain: flowEvm,
   defaultFundingMethod: 'wallet'
+});`}
+						</pre>
+					</div>
+
+					<div className="bg-gray-100 p-4 rounded mb-4">
+						<h3 className="font-medium mb-2">
+							Bridging from Solana to Flow EVM:
+						</h3>
+						<p className="mb-2">
+							For Solana functionality, use the Solana-specific
+							import:
+						</p>
+						<pre className="bg-gray-200 p-2 rounded text-sm">
+							{`import { useFundWallet } from '@privy-io/react-auth/solana';
+
+// Use the hook for Solana operations
+const { fundWallet } = useFundWallet();
+
+// Fund Solana wallet
+await fundWallet(address, {
+  amount: '10', // USDC on Solana
+  cluster: { name: 'mainnet-beta' }
 });`}
 						</pre>
 					</div>

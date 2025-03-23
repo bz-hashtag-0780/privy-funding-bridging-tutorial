@@ -33,6 +33,8 @@ export default function PrivyClientProvider({
 					accentColor: '#0070f3',
 					logo: '/logo.png',
 				},
+				// Enable Solana support
+				supportedChains: ['solana', 'flow-evm'],
 				// Configure funding methods - Replace with your actual funding methods
 				// This enables card payments, wallet transfers and exchange transfers
 				walletFunding: {
